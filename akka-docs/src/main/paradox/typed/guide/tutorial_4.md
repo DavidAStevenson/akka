@@ -85,7 +85,7 @@ A group actor has some work to do when it comes to registrations, including:
 
 ### Handling the registration request
 
-A device group actor must either reply to the request with the `ActorRef` of an existing child, or it should create one. To look up child actors by their device IDs we will use a .
+A device group actor must either reply to the request with the `ActorRef` of an existing child, or it should create one. To look up child actors by their device IDs we will use a //TODO//.
 
 Add the following to your source file:
 
@@ -115,14 +115,14 @@ Java
 
 ### Keeping track of the device actors in the group
 
-So far, we have implemented logic for registering device actors in the group. Devices come and go, however, so we will need a way to remove device actors from the @scala[`Map[String, ActorRef[DeviceMessage]]`]@java[`Map<String, ActorRef<DeviceMessage>>`]. We will assume that when a device is removed, its corresponding device actor is stopped. Supervision, as we discussed earlier, only handles error scenarios &#8212; not graceful stopping. So we need to notify the parent when one of the device actors is stopped.
+So far, we have implemented logic for registering device actors in the group. Devices come and go, however, so we will need a way to remove device actors from the @scala[`Map[String, ActorRef[Device.Command]]`]@java[`Map<String, ActorRef<DeviceMessage>>`]. We will assume that when a device is removed, its corresponding device actor is stopped. Supervision, as we discussed earlier, only handles error scenarios &#8212; not graceful stopping. So we need to notify the parent when one of the device actors is stopped.
 
 Akka provides a _Death Watch_ feature that allows an actor to _watch_ another actor and be notified if the other actor is stopped. Unlike supervision, watching is not limited to parent-child relationships, any actor can watch any other actor as long as it knows the `ActorRef`. After a watched actor stops, the watcher receives a `Terminated(actorRef)` signal which also contains the reference to the watched actor. The watcher can either handle this message explicitly or will fail with a `DeathPactException`. This latter is useful if the actor can no longer perform its own duties after the watched actor has been stopped. In our case, the group should still function after one device have been stopped, so we need to handle the `Terminated(actorRef)` signal.
 
 Our device group actor needs to include functionality that:
 
  1. Starts watching new device actors when they are created.
- 2. Removes a device actor from the @scala[`Map[String, ActorRef[DeviceMessage]]`]@java[`Map<String, ActorRef<DeviceMessage>>`] &#8212; which maps devices to device actors &#8212; when the notification indicates it has stopped.
+ 2. Removes a device actor from the @scala[`Map[String, ActorRef[Device.Command]]`]@java[`Map<String, ActorRef<DeviceMessage>>`] &#8212; which maps devices to device actors &#8212; when the notification indicates it has stopped.
 
 Unfortunately, the `Terminated` signal only contains the `ActorRef` of the child actor. We need the actor's ID to remove it from the map of existing device to device actor mappings. An alternative to the `Terminated` signal is to define a custom message that will be sent when the watched actor is stopped. We will use that here because it gives us the possibility to carry the device ID in that message.
 
