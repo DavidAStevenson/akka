@@ -79,7 +79,7 @@ Scala
 Java
 :   @@snip [DeviceGroupQuery.java](/akka-docs/src/test/java/jdocs/typed/tutorial_5/DeviceGroupQuery.java) { #query-outline }
 
-Note that we have to convert the `RespondTemperature` replies from the device actor to the message protocol that the `DeviceGroupQuery` actor understands, i.e. `DeviceGroupQueryMessage`. For this we use a `messageAdapter` that wraps the `RespondTemperature` in a `WrappedRespondTemperature`, which @scala[extends]@java[implements] `DeviceGroupQueryMessage`.
+Note that we have to convert the `RespondTemperature` replies from the device actor to the message protocol that the `DeviceGroupQuery` actor understands, i.e. `DeviceGroupQuery` Message. For this we use a `messageAdapter` that wraps the `RespondTemperature` in a `WrappedRespondTemperature`, which @scala[extends]@java[implements] `DeviceGroupQuery` Message.
 
 #### Tracking actor state
 
